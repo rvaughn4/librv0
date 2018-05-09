@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="librv0" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/librv0" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/librv0" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Linker>
+			<Add library="pthread" />
+		</Linker>
+		<Unit filename="librv0/librv0_object/librv0_object.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_object/librv0_object.h" />
+		<Unit filename="librv0/librv0_object/librv0_object_readlock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_object/librv0_object_readlock.h" />
+		<Unit filename="librv0/librv0_object/librv0_object_ref.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_object/librv0_object_ref.h" />
+		<Unit filename="librv0/librv0_object/librv0_object_writelock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_object/librv0_object_writelock.h" />
+		<Unit filename="librv0/librv0_rwlock/librv0_rwlock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_rwlock/librv0_rwlock.h" />
+		<Unit filename="librv0/librv0_rwlock/librv0_rwlock_readlock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_rwlock/librv0_rwlock_readlock.h" />
+		<Unit filename="librv0/librv0_rwlock/librv0_rwlock_ref.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_rwlock/librv0_rwlock_ref.h" />
+		<Unit filename="librv0/librv0_rwlock/librv0_rwlock_writelock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_rwlock/librv0_rwlock_writelock.h" />
+		<Unit filename="librv0/librv0_task/librv0_task.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_task/librv0_task.h" />
+		<Unit filename="librv0/librv0_task/librv0_task_readlock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_task/librv0_task_readlock.h" />
+		<Unit filename="librv0/librv0_task/librv0_task_ref.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_task/librv0_task_ref.h" />
+		<Unit filename="librv0/librv0_task/librv0_task_writelock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_task/librv0_task_writelock.h" />
+		<Unit filename="librv0/librv0_taskmgr/librv0_taskmgr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_taskmgr/librv0_taskmgr.h" />
+		<Unit filename="librv0/librv0_taskmgr/librv0_taskmgr_readlock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_taskmgr/librv0_taskmgr_readlock.h" />
+		<Unit filename="librv0/librv0_taskmgr/librv0_taskmgr_ref.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_taskmgr/librv0_taskmgr_ref.h" />
+		<Unit filename="librv0/librv0_taskmgr/librv0_taskmgr_writelock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_taskmgr/librv0_taskmgr_writelock.h" />
+		<Unit filename="librv0/librv0_thread/librv0_thread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_thread/librv0_thread.h" />
+		<Unit filename="librv0/librv0_thread/librv0_thread_readlock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_thread/librv0_thread_readlock.h" />
+		<Unit filename="librv0/librv0_thread/librv0_thread_ref.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_thread/librv0_thread_ref.h" />
+		<Unit filename="librv0/librv0_thread/librv0_thread_writelock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="librv0/librv0_thread/librv0_thread_writelock.h" />
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

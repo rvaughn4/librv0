@@ -1,0 +1,77 @@
+# depslib dependency file v1.0
+1525690210 source:/home/richard/codeblocks/librv/librv0/main.c
+	<stdio.h>
+	<stdlib.h>
+
+1525690598 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_object/librv0_object.c
+
+1525690598 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_object/librv0_object_readlock.c
+
+1525690598 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_object/librv0_object_ref.c
+
+1525690598 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_object/librv0_object_writelock.c
+
+1525742744 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_rwlock/librv0_rwlock_readlock.c
+	"librv0_rwlock_readlock.h"
+	<stdlib.h>
+
+1525772880 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_rwlock/librv0_rwlock_ref.c
+	"librv0_rwlock_ref.h"
+	<pthread.h>
+
+1525772714 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_rwlock/librv0_rwlock_writelock.c
+	"librv0_rwlock_writelock.h"
+	<stdlib.h>
+
+1525690806 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_task/librv0_task.c
+
+1525690806 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_task/librv0_task_readlock.c
+
+1525690806 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_task/librv0_task_ref.c
+
+1525690806 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_task/librv0_task_writelock.c
+
+1525690907 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_taskmgr/librv0_taskmgr.c
+
+1525690907 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_taskmgr/librv0_taskmgr_readlock.c
+
+1525690907 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_taskmgr/librv0_taskmgr_ref.c
+
+1525690907 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_taskmgr/librv0_taskmgr_writelock.c
+
+1525690743 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_thread/librv0_thread.c
+
+1525690743 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_thread/librv0_thread_readlock.c
+
+1525690743 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_thread/librv0_thread_ref.c
+
+1525690743 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_thread/librv0_thread_writelock.c
+
+1525778692 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_rwlock/librv0_rwlock.c
+	"librv0_rwlock.h"
+	"librv0_rwlock_readlock.h"
+	"librv0_rwlock_writelock.h"
+	"librv0_rwlock_ref.h"
+	<stdlib.h>
+	<string.h>
+
+1525778642 /home/richard/codeblocks/librv/librv0/librv0/librv0_rwlock/librv0_rwlock.h
+	<pthread.h>
+	<stdbool.h>
+	"librv0_rwlock_readlock.h"
+	"librv0_rwlock_writelock.h"
+	"librv0_rwlock_ref.h"
+
+1525742688 /home/richard/codeblocks/librv/librv0/librv0/librv0_rwlock/librv0_rwlock_readlock.h
+	"librv0_rwlock.h"
+
+1525855912 /home/richard/codeblocks/librv/librv0/librv0/librv0_rwlock/librv0_rwlock_writelock.h
+	"librv0_rwlock.h"
+
+1525772617 /home/richard/codeblocks/librv/librv0/librv0/librv0_rwlock/librv0_rwlock_ref.h
+	"librv0_rwlock.h"
+	<pthread.h>
+	<stdlib.h>
+	"librv0_rwlock_readlock.h"
+	"librv0_rwlock_writelock.h"
+
