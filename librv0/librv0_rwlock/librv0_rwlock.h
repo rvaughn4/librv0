@@ -8,7 +8,7 @@
 //link to refs
     typedef struct
     {
-        pthread_rwlock_t    rwl;
+        pthread_rwlock_t    *rwl;
         void                **ptr;
     } librv0_rwlock_ref_link;
 
@@ -49,5 +49,9 @@
     bool __librv0_rwlock_insert_reflist( librv0_rwlock *t, librv0_rwlock_ref *r );
 //create more space on ref list
     bool __librv0_rwlock_resize_reflist( librv0_rwlock *t );
+//remove ref from list
+    void __librv0_rwlock_remove_ref( librv0_rwlock *t, librv0_rwlock_ref *r );
+//test rwlock lib
+    bool librv0_rwlock_test( void );
 
 #endif // librv0_rwlock_h

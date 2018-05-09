@@ -11,7 +11,7 @@
         librv0_rwlock_readlock *r;
         r = malloc( sizeof( librv0_rwlock_readlock ) );
         if( r )
-            librv0_rwlock_readlock_init( r, prt );
+            __librv0_rwlock_readlock_init( r, prt );
         return r;
     }
 
@@ -20,22 +20,22 @@
     {
         if( !t || !*t )
             return;
-        librv0_rwlock_readlock_deinit( *t );
+        __librv0_rwlock_readlock_deinit( *t );
         free( *t );
         *t = 0;
     }
 
 //init readlock
-    void librv0_rwlock_readlock_init( librv0_rwlock_readlock *t, librv0_rwlock *prt )
+    void __librv0_rwlock_readlock_init( librv0_rwlock_readlock *t, librv0_rwlock *prt )
     {
         t->prt = prt;
-        t->rwl = prt->rwl;
+        t->rwl = &prt->rwl;
     }
 
 //deinit readlock
-    void librv0_rwlock_readlock_deinit( librv0_rwlock_readlock *t )
+    void __librv0_rwlock_readlock_deinit( librv0_rwlock_readlock *t )
     {
-        pthread_rwlock_unlock( &t->rwl );
+        pthread_rwlock_unlock( t->rwl );
     }
 
 #endif // librv0_rwlock_readlock_h

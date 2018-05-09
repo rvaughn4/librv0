@@ -11,7 +11,7 @@
     typedef struct
     {
         librv0_rwlock *prt;
-        pthread_rwlock_t rwl, rwl_prt;
+        pthread_rwlock_t *rwl, rwl_prt;
     } librv0_rwlock_ref;
 
 #include "librv0_rwlock_readlock.h"
