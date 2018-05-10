@@ -64,11 +64,12 @@
         for( i = 0; i < t->links.cnt; i++ )
         {
             p = &t->links.ptr[ i ];
+            if( !p->rwl || !p->ptr )
+                continue;
         //wrap pointer zeroing in write locks
             pthread_rwlock_wrlock( p->rwl );
         //zero pointer
-            if( p->ptr )
-                *p->ptr = 0;
+            *p->ptr = 0;
         //unlock
             pthread_rwlock_unlock( p->rwl );
         }
@@ -222,6 +223,7 @@
         librv0_rwlock *rwl;
         librv0_rwlock_readlock *rl0, *rl1, *rl2, *rl3;
         librv0_rwlock_writelock *wl0, *wl1;
+        librv0_rwlock_ref *r0, *r1, *r2, *r3;
 
     //create and destroy rwlock object
         rwl = librv0_rwlock_create();
@@ -246,44 +248,149 @@
         librv0_rwlock_readlock_destroy( &rl2 );
         librv0_rwlock_readlock_destroy( &rl3 );
         if( !b )
+        {
+            librv0_rwlock_destroy( &rwl );
             return 0;
+        }
 
     //attempt multiple writelocks
         wl0 = librv0_rwlock_create_writelock( rwl );
         if( !wl0 )
+        {
+            librv0_rwlock_destroy( &rwl );
             return 0;
+        }
         wl1 = librv0_rwlock_try_create_writelock( rwl, 100 );
         librv0_rwlock_writelock_destroy( &wl0 );
         if( wl1 )
         {
             librv0_rwlock_writelock_destroy( &wl1 );
+            librv0_rwlock_destroy( &rwl );
             return 0;
         }
 
     //attempt writelock during readlock
         rl0 = librv0_rwlock_create_readlock( rwl );
         if( !rl0 )
+        {
+            librv0_rwlock_destroy( &rwl );
             return 0;
+        }
         wl0 = librv0_rwlock_try_create_writelock( rwl, 100 );
         librv0_rwlock_readlock_destroy( &rl0 );
         if( wl0 )
         {
             librv0_rwlock_writelock_destroy( &wl0 );
+            librv0_rwlock_destroy( &rwl );
             return 0;
         }
 
     //attempt readlock during writelock
         wl0 = librv0_rwlock_create_writelock( rwl );
         if( !wl0 )
+        {
+            librv0_rwlock_destroy( &rwl );
             return 0;
+        }
         rl0 = librv0_rwlock_try_create_readlock( rwl, 100 );
         librv0_rwlock_writelock_destroy( &wl0 );
         if( rl0 )
         {
             librv0_rwlock_readlock_destroy( &rl0 );
+            librv0_rwlock_destroy( &rwl );
             return 0;
         }
 
+    //test creating and deleting refs
+        wl0 = librv0_rwlock_create_writelock( rwl );
+        if( !wl0 )
+        {
+            librv0_rwlock_destroy( &rwl );
+            return 0;
+        }
+        r0 = librv0_rwlock_writelock_create_ref( wl0 );
+        b = r0 != 0;
+        r1 = librv0_rwlock_writelock_create_ref( wl0 );
+        b &= r1 != 0;
+        r2 = librv0_rwlock_writelock_create_ref( wl0 );
+        b &= r2 != 0;
+        r3 = librv0_rwlock_writelock_create_ref( wl0 );
+        b &= r3 != 0;
+        librv0_rwlock_writelock_destroy( &wl0 );
+        librv0_rwlock_ref_destroy( &r0 );
+        librv0_rwlock_ref_destroy( &r1 );
+        librv0_rwlock_ref_destroy( &r2 );
+        librv0_rwlock_ref_destroy( &r3 );
+        if( !b )
+        {
+            librv0_rwlock_destroy( &rwl );
+            return 0;
+        }
+
+    //test writelock during readlock
+        wl0 = librv0_rwlock_create_writelock( rwl );
+        if( !wl0 )
+        {
+            librv0_rwlock_destroy( &rwl );
+            return 0;
+        }
+        r0 = librv0_rwlock_writelock_create_ref( wl0 );
+        b = r0 != 0;
+        r1 = librv0_rwlock_writelock_create_ref( wl0 );
+        b &= r1 != 0;
+        if( !b )
+        {
+            librv0_rwlock_ref_destroy( &r0 );
+            librv0_rwlock_ref_destroy( &r1 );
+            librv0_rwlock_destroy( &rwl );
+            return 0;
+        }
+        librv0_rwlock_writelock_destroy( &wl0 );
+        rl0 = librv0_rwlock_ref_try_create_readlock( r0, 100 );
+        b = rl0 != 0;
+        wl0 = librv0_rwlock_ref_try_create_writelock( r1, 100 );
+        b &= wl0 == 0;
+        librv0_rwlock_readlock_destroy( &rl0 );
+        librv0_rwlock_writelock_destroy( &wl0 );
+        librv0_rwlock_ref_destroy( &r0 );
+        librv0_rwlock_ref_destroy( &r1 );
+        if( !b )
+        {
+            librv0_rwlock_destroy( &rwl );
+            return 0;
+        }
+
+    //destroy rwlock object and then attempt to use refs
+        wl0 = librv0_rwlock_create_writelock( rwl );
+        if( !wl0 )
+        {
+            librv0_rwlock_destroy( &rwl );
+            return 0;
+        }
+        r0 = librv0_rwlock_writelock_create_ref( wl0 );
+        b = r0 != 0;
+        r1 = librv0_rwlock_writelock_create_ref( wl0 );
+        b &= r1 != 0;
+        librv0_rwlock_writelock_destroy( &wl0 );
+        librv0_rwlock_destroy( &rwl );
+        if( !b )
+        {
+            librv0_rwlock_ref_destroy( &r0 );
+            librv0_rwlock_ref_destroy( &r1 );
+            return 0;
+        }
+        rl0 = librv0_rwlock_ref_try_create_readlock( r0, 100 );
+        b = rl0 == 0;
+        wl0 = librv0_rwlock_ref_try_create_writelock( r1, 100 );
+        b &= wl0 == 0;
+        librv0_rwlock_readlock_destroy( &rl0 );
+        librv0_rwlock_writelock_destroy( &wl0 );
+        librv0_rwlock_ref_destroy( &r0 );
+        librv0_rwlock_ref_destroy( &r1 );
+        if( !b )
+        {
+            return 0;
+        }
 
         return 1;
     }

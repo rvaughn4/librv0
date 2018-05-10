@@ -9,18 +9,26 @@
     librv0_rwlock_ref *librv0_rwlock_ref_create( librv0_rwlock *prt, librv0_rwlock_writelock *l )
     {
         librv0_rwlock_ref *r;
+     //allocate memory
         r = malloc( sizeof( librv0_rwlock_ref ) );
+    //init struct
         if( r )
             __librv0_rwlock_ref_init( r, prt, l );
+    //return
         return r;
     }
 
 //destroy ref
     void librv0_rwlock_ref_destroy( librv0_rwlock_ref **t )
     {
+    //testpointer for null
         if( !t || !*t )
             return;
+    //deinit struct
         __librv0_rwlock_ref_deinit( *t );
+    //release memory
+        free( *t );
+    //set to null
         *t = 0;
     }
 
