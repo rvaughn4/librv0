@@ -27,6 +27,8 @@
     void __librv0_rwlock_writelock_deinit( librv0_rwlock_writelock *t );
 //create new reference
     librv0_rwlock_ref *librv0_rwlock_writelock_create_ref( librv0_rwlock_writelock *t );
+//create new reference on stack
+    librv0_rwlock_ref *librv0_rwlock_writelock_create_ref_on_stack( librv0_rwlock_writelock *t, librv0_rwlock_ref *r );
 
 #endif // librv0_rwlock_readlock_h
 

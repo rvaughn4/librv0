@@ -74,21 +74,35 @@
     librv0_rwlock_ref *librv0_rwlock_writelock_create_ref( librv0_rwlock_writelock *t )
     {
         librv0_rwlock_ref *r;
-        r = librv0_rwlock_ref_create( t->prt, t );
+    //allocate memory
+        r = malloc( sizeof( librv0_rwlock_ref ) );
         if( !r )
+            return 0;
+    //create ref
+        if( librv0_rwlock_writelock_create_ref_on_stack( t, r ) )
+            return r;
+    //failure, release memory
+        free( r );
+        return 0;
+    }
+
+//create new reference on stack
+    librv0_rwlock_ref *librv0_rwlock_writelock_create_ref_on_stack( librv0_rwlock_writelock *t, librv0_rwlock_ref *r )
+    {
+        if( !librv0_rwlock_ref_create_on_stack( t->prt, t, r ) )
             return 0;
         if( !__librv0_rwlock_insert_reflist( t->prt, r ) )
         {
             if( !__librv0_rwlock_resize_reflist( t->prt ) )
             {
-                librv0_rwlock_ref_destroy( &r );
+                librv0_rwlock_ref_destroy_on_stack( r );
                 return 0;
             }
             else
             {
                 if( !__librv0_rwlock_insert_reflist( t->prt, r ) )
                 {
-                    librv0_rwlock_ref_destroy( &r );
+                    librv0_rwlock_ref_destroy_on_stack( r );
                     return 0;
                 }
             }

@@ -24,7 +24,7 @@
 //destroy ref
     void librv0_rwlock_ref_destroy( librv0_rwlock_ref **t );
 //destroy ref on the stack
-    void librv0_rwlock_ref_destory_on_stack( librv0_rwlock_ref *t );
+    void librv0_rwlock_ref_destroy_on_stack( librv0_rwlock_ref *t );
 //init ref
     void __librv0_rwlock_ref_init( librv0_rwlock_ref *t, librv0_rwlock *prt, librv0_rwlock_writelock *l );
 //deinit ref

@@ -36,7 +36,7 @@
         if( !t || !*t )
             return;
     //deinit struct
-        librv0_rwlock_ref_destory_on_stack( *t );
+        librv0_rwlock_ref_destroy_on_stack( *t );
     //release memory
         free( *t );
     //set to null
@@ -44,7 +44,7 @@
     }
 
 //destroy ref on the stack
-    void librv0_rwlock_ref_destory_on_stack( librv0_rwlock_ref *t )
+    void librv0_rwlock_ref_destroy_on_stack( librv0_rwlock_ref *t )
     {
     //testpointer for null
         if( !t )
