@@ -82,54 +82,108 @@
     librv0_rwlock_readlock *librv0_rwlock_create_readlock( librv0_rwlock *t )
     {
         librv0_rwlock_readlock *r;
-    //attempt to acquire readlock
-        if( pthread_rwlock_rdlock( &t->rwl ) )
-            return 0;
-    //create readlock struct or unlock on fail
-        r = librv0_rwlock_readlock_create( t );
+    //allocate memory
+        r = malloc( sizeof( librv0_rwlock_readlock ) );
         if( !r )
-            pthread_rwlock_unlock( &t->rwl );
-    //return struct
-        return r;
+            return 0;
+    //attempt lock
+        if( librv0_rwlock_create_readlock_extern( t, r ) )
+            return r;
+    //failed, release memory
+        free( r );
+        return 0;
     }
 
 //attempt readlock, blocking until locked or ms time passes
     librv0_rwlock_readlock *librv0_rwlock_try_create_readlock( librv0_rwlock *t, unsigned long long ms )
     {
-        struct timespec ts;
         librv0_rwlock_readlock *r;
+    //allocate memory
+        r = malloc( sizeof( librv0_rwlock_readlock ) );
+        if( !r )
+            return 0;
+    //attempt lock
+        if( librv0_rwlock_try_create_readlock_extern( t, r, ms ) )
+            return r;
+    //failed, release memory
+        free( r );
+        return 0;
+    }
+
+//attempt readlock, blocking until locked
+    librv0_rwlock_readlock *librv0_rwlock_create_readlock_extern( librv0_rwlock *t, librv0_rwlock_readlock *l )
+    {
+    //attempt to acquire readlock
+        if( pthread_rwlock_rdlock( &t->rwl ) )
+            return 0;
+    //create readlock struct or unlock on fail
+        __librv0_rwlock_readlock_init( l, t );
+    //return struct
+        return l;
+    }
+
+//attempt readlock, blocking until locked or ms time passes
+    librv0_rwlock_readlock *librv0_rwlock_try_create_readlock_extern( librv0_rwlock *t, librv0_rwlock_readlock *l, unsigned long long ms )
+    {
+        struct timespec ts;
     //convert ms time into timespec
         librv0_rwlock_ms2ts( &ts, ms );
     //acquire readlock
         if( pthread_rwlock_timedrdlock( &t->rwl, &ts ) )
             return 0;
     //create readlock struct or release lock on fail
-        r = librv0_rwlock_readlock_create( t );
-        if( !r )
-            pthread_rwlock_unlock( &t->rwl );
+        __librv0_rwlock_readlock_init( l, t );
     //return struct
-        return r;
+        return l;
     }
 
 //attempt writelock, blocking until locked
     librv0_rwlock_writelock *librv0_rwlock_create_writelock( librv0_rwlock *t )
     {
         librv0_rwlock_writelock *r;
-    //acquire writelock
-        if( pthread_rwlock_wrlock( &t->rwl ) )
-            return 0;
-    //create writelock struct or unlock on fail
-        r = librv0_rwlock_writelock_create( t );
+    //allocate memory
+        r = malloc( sizeof( librv0_rwlock_writelock ) );
         if( !r )
-            pthread_rwlock_unlock( &t->rwl );
-    //return struct
-        return r;
+            return 0;
+    //attempt lock
+        if( librv0_rwlock_create_writelock_extern( t, r ) )
+            return r;
+    //failed, release memory
+        free( r );
+        return 0;
     }
 
 //attempt readlock, blocking until locked or ms time passes
     librv0_rwlock_writelock *librv0_rwlock_try_create_writelock( librv0_rwlock *t, unsigned long long ms )
     {
         librv0_rwlock_writelock *r;
+    //allocate memory
+        r = malloc( sizeof( librv0_rwlock_writelock ) );
+        if( !r )
+            return 0;
+    //attempt lock
+        if( librv0_rwlock_try_create_writelock_extern( t, r, ms ) )
+            return r;
+    //failed, release memory
+        free( r );
+        return 0;
+    }
+
+//attempt writelock, blocking until locked
+    librv0_rwlock_writelock *librv0_rwlock_create_writelock_extern( librv0_rwlock *t, librv0_rwlock_writelock *l )
+    {
+    //acquire writelock
+        if( pthread_rwlock_wrlock( &t->rwl ) )
+            return 0;
+    //create writelock struct or unlock on fail
+        __librv0_rwlock_writelock_init( l, t );
+    //return struct
+        return l;
+    }
+
+//attempt readlock, blocking until locked or ms time passes
+    librv0_rwlock_writelock *librv0_rwlock_try_create_writelock_extern( librv0_rwlock *t, librv0_rwlock_writelock *l, unsigned long long ms )
+    {
         struct timespec ts;
     //convert ms time into timespec
         librv0_rwlock_ms2ts( &ts, ms );
@@ -137,11 +191,9 @@
         if( pthread_rwlock_timedwrlock( &t->rwl, &ts ) )
             return 0;
     //create writelock struct or unlock on fail
-        r = librv0_rwlock_writelock_create( t );
-        if( !r )
-            pthread_rwlock_unlock( &t->rwl );
+        __librv0_rwlock_writelock_init( l, t );
     //return struct
-        return r;
+        return l;
     }
 
 //find blank location on ref list and insert ref
@@ -346,10 +398,43 @@
             return 0;
         }
         librv0_rwlock_writelock_destroy( &wl0 );
-        rl0 = librv0_rwlock_ref_try_create_readlock( r0, 100 );
+        rl0 = librv0_rwlock_ref_create_readlock( r0 );
         b = rl0 != 0;
         wl0 = librv0_rwlock_ref_try_create_writelock( r1, 100 );
         b &= wl0 == 0;
+        librv0_rwlock_readlock_destroy( &rl0 );
+        librv0_rwlock_writelock_destroy( &wl0 );
+        librv0_rwlock_ref_destroy( &r0 );
+        librv0_rwlock_ref_destroy( &r1 );
+        if( !b )
+        {
+            librv0_rwlock_destroy( &rwl );
+            return 0;
+        }
+
+    //test writelock during readlock
+        wl0 = librv0_rwlock_create_writelock( rwl );
+        if( !wl0 )
+        {
+            librv0_rwlock_destroy( &rwl );
+            return 0;
+        }
+        r0 = librv0_rwlock_writelock_create_ref( wl0 );
+        b = r0 != 0;
+        r1 = librv0_rwlock_writelock_create_ref( wl0 );
+        b &= r1 != 0;
+        if( !b )
+        {
+            librv0_rwlock_ref_destroy( &r0 );
+            librv0_rwlock_ref_destroy( &r1 );
+            librv0_rwlock_destroy( &rwl );
+            return 0;
+        }
+        librv0_rwlock_writelock_destroy( &wl0 );
+        wl0 = librv0_rwlock_ref_create_writelock( r0 );
+        b = wl0 != 0;
+        rl0 = librv0_rwlock_ref_try_create_readlock( r1, 100 );
+        b &= rl0 == 0;
         librv0_rwlock_readlock_destroy( &rl0 );
         librv0_rwlock_writelock_destroy( &wl0 );
         librv0_rwlock_ref_destroy( &r0 );
@@ -379,7 +464,7 @@
             librv0_rwlock_ref_destroy( &r1 );
             return 0;
         }
-        rl0 = librv0_rwlock_ref_try_create_readlock( r0, 100 );
+        rl0 = librv0_rwlock_ref_create_readlock( r0 );
         b = rl0 == 0;
         wl0 = librv0_rwlock_ref_try_create_writelock( r1, 100 );
         b &= wl0 == 0;

@@ -41,10 +41,18 @@
     librv0_rwlock_readlock *librv0_rwlock_create_readlock( librv0_rwlock *t );
 //attempt readlock, blocking until locked or ms time passes
     librv0_rwlock_readlock *librv0_rwlock_try_create_readlock( librv0_rwlock *t, unsigned long long ms );
+//attempt readlock, blocking until locked
+    librv0_rwlock_readlock *librv0_rwlock_create_readlock_extern( librv0_rwlock *t, librv0_rwlock_readlock *l );
+//attempt readlock, blocking until locked or ms time passes
+    librv0_rwlock_readlock *librv0_rwlock_try_create_readlock_extern( librv0_rwlock *t, librv0_rwlock_readlock *l, unsigned long long ms );
 //attempt writelock, blocking until locked
     librv0_rwlock_writelock *librv0_rwlock_create_writelock( librv0_rwlock *t );
 //attempt readlock, blocking until locked or ms time passes
     librv0_rwlock_writelock *librv0_rwlock_try_create_writelock( librv0_rwlock *t, unsigned long long ms );
+//attempt writelock, blocking until locked
+    librv0_rwlock_writelock *librv0_rwlock_create_writelock_extern( librv0_rwlock *t, librv0_rwlock_writelock *l );
+//attempt readlock, blocking until locked or ms time passes
+    librv0_rwlock_writelock *librv0_rwlock_try_create_writelock_extern( librv0_rwlock *t, librv0_rwlock_writelock *l, unsigned long long ms );
 //find blank location on ref list and insert ref
     bool __librv0_rwlock_insert_reflist( librv0_rwlock *t, librv0_rwlock_ref *r );
 //create more space on ref list
