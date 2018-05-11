@@ -15,8 +15,12 @@
 
 //create new readlock
     librv0_rwlock_writelock *librv0_rwlock_writelock_create( librv0_rwlock *prt );
+//create new readlock
+    librv0_rwlock_writelock *librv0_rwlock_writelock_create_on_stack( librv0_rwlock_writelock *t, librv0_rwlock *prt );
 //destroy readlock
     void librv0_rwlock_writelock_destroy( librv0_rwlock_writelock **t );
+//destroy readlock
+    void librv0_rwlock_writelock_destroy_on_stack( librv0_rwlock_writelock *t );
 //init readlock
     void __librv0_rwlock_writelock_init( librv0_rwlock_writelock *t, librv0_rwlock *prt );
 //deinit readlock

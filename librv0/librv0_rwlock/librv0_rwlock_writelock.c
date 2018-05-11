@@ -9,25 +9,56 @@
     librv0_rwlock_writelock *librv0_rwlock_writelock_create( librv0_rwlock *prt )
     {
         librv0_rwlock_writelock *r;
+    //allocate memory
         r = malloc( sizeof( librv0_rwlock_writelock ) );
-        if( r )
-            __librv0_rwlock_writelock_init( r, prt );
-        return r;
+    //init struct
+        if( librv0_rwlock_writelock_create_on_stack( r, prt ) )
+            return r;
+    //release memory on error and return
+        free( r );
+        return 0;
+    }
+
+//create new readlock
+    librv0_rwlock_writelock *librv0_rwlock_writelock_create_on_stack( librv0_rwlock_writelock *t, librv0_rwlock *prt )
+    {
+    //test pointers
+        if( !t || !prt )
+            return 0;
+    //init struct
+        __librv0_rwlock_writelock_init( t, prt );
+    //return
+        return t;
     }
 
 //destroy writelock
     void librv0_rwlock_writelock_destroy( librv0_rwlock_writelock **t )
     {
+    //test pointers
         if( !t || !*t )
             return;
-        __librv0_rwlock_writelock_deinit( *t );
+    //deinit struct
+        librv0_rwlock_writelock_destroy_on_stack( *t );
+    //release memory
         free( *t );
+    //set pointer to null
         *t = 0;
+    }
+
+//destroy readlock
+    void librv0_rwlock_writelock_destroy_on_stack( librv0_rwlock_writelock *t )
+    {
+    //test pointers
+        if( !t )
+            return;
+    //deinit struct
+        __librv0_rwlock_writelock_deinit( t );
     }
 
 //init writelock
     void __librv0_rwlock_writelock_init( librv0_rwlock_writelock *t, librv0_rwlock *prt )
     {
+    //set pointers
         t->prt = prt;
         t->rwl = &prt->rwl;
     }
@@ -35,6 +66,7 @@
 //deinit writelock
     void __librv0_rwlock_writelock_deinit( librv0_rwlock_writelock *t )
     {
+    //unlock parent struct
         pthread_rwlock_unlock( t->rwl );
     }
 

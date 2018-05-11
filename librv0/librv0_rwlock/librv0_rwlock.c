@@ -23,10 +23,21 @@
     //allocate memory for struct
         r = malloc( sizeof( librv0_rwlock ) );
     //init struct
-        if( r )
-            __librv0_rwlock_init( r );
+        librv0_rwlock_create_on_stack( r );
     //return struct
         return r;
+    }
+
+//create new rwlock on stack
+    librv0_rwlock *librv0_rwlock_create_on_stack( librv0_rwlock *t )
+    {
+    //test pointer
+        if( !t )
+            return 0;
+    //init struct
+        __librv0_rwlock_init( t );
+    //return
+        return t;
     }
 
 //destroy rwlock
@@ -36,11 +47,21 @@
         if( !t || !*t )
             return;
     //deinit struct
-        __librv0_rwlock_deinit( *t );
+        librv0_rwlock_destroy_on_stack( *t );
     //release memory
         free( *t );
     //set pointer to null
         *t = 0;
+    }
+
+//destroy rwlock on stack
+    void librv0_rwlock_destroy_on_stack( librv0_rwlock *t )
+    {
+    //test pointers
+        if( !t )
+            return;
+    //deinit struct
+        __librv0_rwlock_deinit( t );
     }
 
 //initiate rwlock
@@ -87,7 +108,7 @@
         if( !r )
             return 0;
     //attempt lock
-        if( librv0_rwlock_create_readlock_extern( t, r ) )
+        if( librv0_rwlock_create_readlock_on_stack( t, r ) )
             return r;
     //failed, release memory
         free( r );
@@ -103,7 +124,7 @@
         if( !r )
             return 0;
     //attempt lock
-        if( librv0_rwlock_try_create_readlock_extern( t, r, ms ) )
+        if( librv0_rwlock_try_create_readlock_on_stack( t, r, ms ) )
             return r;
     //failed, release memory
         free( r );
@@ -111,19 +132,21 @@
     }
 
 //attempt readlock, blocking until locked
-    librv0_rwlock_readlock *librv0_rwlock_create_readlock_extern( librv0_rwlock *t, librv0_rwlock_readlock *l )
+    librv0_rwlock_readlock *librv0_rwlock_create_readlock_on_stack( librv0_rwlock *t, librv0_rwlock_readlock *l )
     {
     //attempt to acquire readlock
         if( pthread_rwlock_rdlock( &t->rwl ) )
             return 0;
     //create readlock struct or unlock on fail
-        __librv0_rwlock_readlock_init( l, t );
-    //return struct
-        return l;
+        if( librv0_rwlock_readlock_create_on_stack( t, l ) )
+            return l;
+    //unlock and return
+        pthread_rwlock_unlock( &t->rwl );
+        return 0;
     }
 
 //attempt readlock, blocking until locked or ms time passes
-    librv0_rwlock_readlock *librv0_rwlock_try_create_readlock_extern( librv0_rwlock *t, librv0_rwlock_readlock *l, unsigned long long ms )
+    librv0_rwlock_readlock *librv0_rwlock_try_create_readlock_on_stack( librv0_rwlock *t, librv0_rwlock_readlock *l, unsigned long long ms )
     {
         struct timespec ts;
     //convert ms time into timespec
@@ -131,10 +154,12 @@
     //acquire readlock
         if( pthread_rwlock_timedrdlock( &t->rwl, &ts ) )
             return 0;
-    //create readlock struct or release lock on fail
-        __librv0_rwlock_readlock_init( l, t );
-    //return struct
-        return l;
+    //create readlock struct or unlock on fail
+        if( librv0_rwlock_readlock_create_on_stack( t, l ) )
+            return l;
+    //unlock and return
+        pthread_rwlock_unlock( &t->rwl );
+        return 0;
     }
 
 //attempt writelock, blocking until locked
@@ -146,7 +171,7 @@
         if( !r )
             return 0;
     //attempt lock
-        if( librv0_rwlock_create_writelock_extern( t, r ) )
+        if( librv0_rwlock_create_writelock_on_stack( t, r ) )
             return r;
     //failed, release memory
         free( r );
@@ -162,7 +187,7 @@
         if( !r )
             return 0;
     //attempt lock
-        if( librv0_rwlock_try_create_writelock_extern( t, r, ms ) )
+        if( librv0_rwlock_try_create_writelock_on_stack( t, r, ms ) )
             return r;
     //failed, release memory
         free( r );
@@ -170,19 +195,21 @@
     }
 
 //attempt writelock, blocking until locked
-    librv0_rwlock_writelock *librv0_rwlock_create_writelock_extern( librv0_rwlock *t, librv0_rwlock_writelock *l )
+    librv0_rwlock_writelock *librv0_rwlock_create_writelock_on_stack( librv0_rwlock *t, librv0_rwlock_writelock *l )
     {
     //acquire writelock
         if( pthread_rwlock_wrlock( &t->rwl ) )
             return 0;
     //create writelock struct or unlock on fail
-        __librv0_rwlock_writelock_init( l, t );
-    //return struct
-        return l;
+        if( librv0_rwlock_writelock_create_on_stack( l, t ) )
+            return l;
+    //failed, unlock and return
+        pthread_rwlock_unlock( &t->rwl );
+        return 0;
     }
 
 //attempt readlock, blocking until locked or ms time passes
-    librv0_rwlock_writelock *librv0_rwlock_try_create_writelock_extern( librv0_rwlock *t, librv0_rwlock_writelock *l, unsigned long long ms )
+    librv0_rwlock_writelock *librv0_rwlock_try_create_writelock_on_stack( librv0_rwlock *t, librv0_rwlock_writelock *l, unsigned long long ms )
     {
         struct timespec ts;
     //convert ms time into timespec
@@ -191,9 +218,11 @@
         if( pthread_rwlock_timedwrlock( &t->rwl, &ts ) )
             return 0;
     //create writelock struct or unlock on fail
-        __librv0_rwlock_writelock_init( l, t );
-    //return struct
-        return l;
+        if( librv0_rwlock_writelock_create_on_stack( l, t ) )
+            return l;
+    //failed, unlock and return
+        pthread_rwlock_unlock( &t->rwl );
+        return 0;
     }
 
 //find blank location on ref list and insert ref

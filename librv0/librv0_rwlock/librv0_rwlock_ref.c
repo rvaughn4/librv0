@@ -12,10 +12,21 @@
      //allocate memory
         r = malloc( sizeof( librv0_rwlock_ref ) );
     //init struct
-        if( r )
-            __librv0_rwlock_ref_init( r, prt, l );
+        librv0_rwlock_ref_create_on_stack( prt, l, r );
     //return
         return r;
+    }
+
+//create new ref on the stack
+    librv0_rwlock_ref *librv0_rwlock_ref_create_on_stack( librv0_rwlock *prt, librv0_rwlock_writelock *l, librv0_rwlock_ref *t )
+    {
+    //test pointers
+        if( !t || !l || !prt )
+            return 0;
+    //init struct
+        __librv0_rwlock_ref_init( t, prt, l );
+    //return
+        return t;
     }
 
 //destroy ref
@@ -25,11 +36,21 @@
         if( !t || !*t )
             return;
     //deinit struct
-        __librv0_rwlock_ref_deinit( *t );
+        librv0_rwlock_ref_destory_on_stack( *t );
     //release memory
         free( *t );
     //set to null
         *t = 0;
+    }
+
+//destroy ref on the stack
+    void librv0_rwlock_ref_destory_on_stack( librv0_rwlock_ref *t )
+    {
+    //testpointer for null
+        if( !t )
+            return;
+    //deinit struct
+        __librv0_rwlock_ref_deinit( t );
     }
 
 //init ref
@@ -65,6 +86,18 @@
 //create readlock
     librv0_rwlock_readlock *librv0_rwlock_ref_create_readlock( librv0_rwlock_ref *t )
     {
+        return librv0_rwlock_ref_create_readlock_on_stack( t, 0 );
+    }
+
+//create readlock with timeout
+    librv0_rwlock_readlock *librv0_rwlock_ref_try_create_readlock( librv0_rwlock_ref *t, unsigned long long ms )
+    {
+        return librv0_rwlock_ref_try_create_readlock_on_stack( t, 0, ms );
+    }
+
+//create readlock
+    librv0_rwlock_readlock *librv0_rwlock_ref_create_readlock_on_stack( librv0_rwlock_ref *t, librv0_rwlock_readlock *l )
+    {
         librv0_rwlock_readlock *r;
     //acquire lock on local pointer
         if( pthread_rwlock_rdlock( &t->rwl_prt ) )
@@ -76,7 +109,10 @@
             return 0;
         }
     //create readlock
-        r = librv0_rwlock_create_readlock( t->prt );
+        if( !l )
+            r = librv0_rwlock_create_readlock( t->prt );
+        else
+            r = librv0_rwlock_create_readlock_on_stack( t->prt, l );
     //unlock local pointer
         pthread_rwlock_unlock( &t->rwl_prt );
     //return readlock
@@ -84,7 +120,7 @@
     }
 
 //create readlock with timeout
-    librv0_rwlock_readlock *librv0_rwlock_ref_try_create_readlock( librv0_rwlock_ref *t, unsigned long long ms )
+    librv0_rwlock_readlock *librv0_rwlock_ref_try_create_readlock_on_stack( librv0_rwlock_ref *t, librv0_rwlock_readlock *l, unsigned long long ms )
     {
         struct timespec ts;
         librv0_rwlock_readlock *r;
@@ -100,7 +136,10 @@
             return 0;
         }
     //create readlock
-        r = librv0_rwlock_try_create_readlock( t->prt, ms );
+        if( !l )
+            r = librv0_rwlock_try_create_readlock( t->prt, ms );
+        else
+            r = librv0_rwlock_try_create_readlock_on_stack( t->prt, l, ms );
     //unlock the local pointer
         pthread_rwlock_unlock( &t->rwl_prt );
     //return readlock
@@ -109,6 +148,18 @@
 
 //create writelock
     librv0_rwlock_writelock *librv0_rwlock_ref_create_writelock( librv0_rwlock_ref *t )
+    {
+        return librv0_rwlock_ref_create_writelock_on_stack( t, 0 );
+    }
+
+//create writelock with timeout
+    librv0_rwlock_writelock *librv0_rwlock_ref_try_create_writelock( librv0_rwlock_ref *t, unsigned long long ms )
+    {
+        return librv0_rwlock_ref_try_create_writelock_on_stack( t, 0, ms );
+    }
+
+//create writelock
+    librv0_rwlock_writelock *librv0_rwlock_ref_create_writelock_on_stack( librv0_rwlock_ref *t, librv0_rwlock_writelock *l )
     {
         librv0_rwlock_writelock *r;
     //lock local pointer
@@ -121,7 +172,10 @@
             return 0;
         }
     //create writelock
-        r = librv0_rwlock_create_writelock( t->prt );
+        if( !l )
+            r = librv0_rwlock_create_writelock( t->prt );
+        else
+            r = librv0_rwlock_create_writelock_on_stack( t->prt, l );
     //unlock local pointer
         pthread_rwlock_unlock( &t->rwl_prt );
     //return struct
@@ -129,7 +183,7 @@
     }
 
 //create writelock with timeout
-    librv0_rwlock_writelock *librv0_rwlock_ref_try_create_writelock( librv0_rwlock_ref *t, unsigned long long ms )
+    librv0_rwlock_writelock *librv0_rwlock_ref_try_create_writelock_on_stack( librv0_rwlock_ref *t, librv0_rwlock_writelock *l, unsigned long long ms )
     {
         struct timespec ts;
         librv0_rwlock_writelock *r;
@@ -145,7 +199,10 @@
             return 0;
         }
     //create writelock
-        r = librv0_rwlock_try_create_writelock( t->prt, ms );
+        if( !l )
+            r = librv0_rwlock_try_create_writelock( t->prt, ms );
+        else
+            r = librv0_rwlock_try_create_writelock_on_stack( t->prt, l, ms );
     //unlock local pointer
         pthread_rwlock_unlock( &t->rwl_prt );
     //return
