@@ -6,25 +6,25 @@
 #include <pthread.h>
 
 //create new ref
-    librv0_rwlock_ref *librv0_rwlock_ref_create( librv0_rwlock *prt, librv0_rwlock_writelock *l )
+    librv0_rwlock_ref *librv0_rwlock_ref_create( librv0_rwlock *prt, librv0_rwlock_writelock *l, void *ext_ptr )
     {
         librv0_rwlock_ref *r;
      //allocate memory
         r = malloc( sizeof( librv0_rwlock_ref ) );
     //init struct
-        librv0_rwlock_ref_create_on_stack( prt, l, r );
+        librv0_rwlock_ref_create_on_stack( prt, l, r, ext_ptr );
     //return
         return r;
     }
 
 //create new ref on the stack
-    librv0_rwlock_ref *librv0_rwlock_ref_create_on_stack( librv0_rwlock *prt, librv0_rwlock_writelock *l, librv0_rwlock_ref *t )
+    librv0_rwlock_ref *librv0_rwlock_ref_create_on_stack( librv0_rwlock *prt, librv0_rwlock_writelock *l, librv0_rwlock_ref *t, void *ext_ptr )
     {
     //test pointers
         if( !t || !l || !prt )
             return 0;
     //init struct
-        __librv0_rwlock_ref_init( t, prt, l );
+        __librv0_rwlock_ref_init( t, prt, l, ext_ptr );
     //return
         return t;
     }
@@ -54,9 +54,11 @@
     }
 
 //init ref
-    void __librv0_rwlock_ref_init( librv0_rwlock_ref *t, librv0_rwlock *prt, librv0_rwlock_writelock *l )
+    void __librv0_rwlock_ref_init( librv0_rwlock_ref *t, librv0_rwlock *prt, librv0_rwlock_writelock *l, void *ext_ptr )
     {
+    //set pointers
         t->prt = prt;
+        t->ext_ptr = ext_ptr;
     //pointer to parent lock
         t->rwl = &prt->rwl;
     //create rwlock for local pointer
@@ -207,6 +209,43 @@
         pthread_rwlock_unlock( &t->rwl_prt );
     //return
         return r;
+    }
+
+//lock external pointer
+    void *librv0_rwlock_ref_lock_ext_pointer( librv0_rwlock_ref *t )
+    {
+    //acquire readlock
+        if( pthread_rwlock_rdlock( &t->rwl_prt ) )
+            return 0;
+    //return pointer
+        if( t->ext_ptr )
+            return t->ext_ptr;
+    //if not avail, unlock and return null
+        pthread_rwlock_unlock( &t->rwl_prt );
+        return 0;
+    }
+
+//lock external pointer
+    void *librv0_rwlock_ref_try_lock_ext_pointer( librv0_rwlock_ref *t, unsigned long long ms )
+    {
+        struct timespec ts;
+    //convert ms time to timepsec
+        librv0_rwlock_ms2ts( &ts, ms );
+    //acquire readlock
+        if( pthread_rwlock_timedrdlock( &t->rwl_prt, &ts ) )
+            return 0;
+    //return pointer
+        if( t->ext_ptr )
+            return t->ext_ptr;
+    //if not avail, unlock and return null
+        pthread_rwlock_unlock( &t->rwl_prt );
+        return 0;
+    }
+
+//unlock external pointer
+    void librv0_rwlock_ref_unlock_ext_pointer( librv0_rwlock_ref *t )
+    {
+        pthread_rwlock_unlock( &t->rwl_prt );
     }
 
 #endif // librv0_rwlock_ref_h

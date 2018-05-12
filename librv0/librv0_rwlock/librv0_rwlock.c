@@ -389,13 +389,13 @@
             librv0_rwlock_destroy( &rwl );
             return 0;
         }
-        r0 = librv0_rwlock_writelock_create_ref( wl0 );
+        r0 = librv0_rwlock_writelock_create_ref( wl0, 0 );
         b = r0 != 0;
-        r1 = librv0_rwlock_writelock_create_ref( wl0 );
+        r1 = librv0_rwlock_writelock_create_ref( wl0, 0 );
         b &= r1 != 0;
-        r2 = librv0_rwlock_writelock_create_ref( wl0 );
+        r2 = librv0_rwlock_writelock_create_ref( wl0, 0 );
         b &= r2 != 0;
-        r3 = librv0_rwlock_writelock_create_ref( wl0 );
+        r3 = librv0_rwlock_writelock_create_ref( wl0, 0 );
         b &= r3 != 0;
         librv0_rwlock_writelock_destroy( &wl0 );
         librv0_rwlock_ref_destroy( &r0 );
@@ -415,9 +415,9 @@
             librv0_rwlock_destroy( &rwl );
             return 0;
         }
-        r0 = librv0_rwlock_writelock_create_ref( wl0 );
+        r0 = librv0_rwlock_writelock_create_ref( wl0, 0 );
         b = r0 != 0;
-        r1 = librv0_rwlock_writelock_create_ref( wl0 );
+        r1 = librv0_rwlock_writelock_create_ref( wl0, 0 );
         b &= r1 != 0;
         if( !b )
         {
@@ -448,9 +448,9 @@
             librv0_rwlock_destroy( &rwl );
             return 0;
         }
-        r0 = librv0_rwlock_writelock_create_ref( wl0 );
+        r0 = librv0_rwlock_writelock_create_ref( wl0, 0 );
         b = r0 != 0;
-        r1 = librv0_rwlock_writelock_create_ref( wl0 );
+        r1 = librv0_rwlock_writelock_create_ref( wl0, 0 );
         b &= r1 != 0;
         if( !b )
         {
@@ -481,9 +481,9 @@
             librv0_rwlock_destroy( &rwl );
             return 0;
         }
-        r0 = librv0_rwlock_writelock_create_ref( wl0 );
+        r0 = librv0_rwlock_writelock_create_ref( wl0, 0 );
         b = r0 != 0;
-        r1 = librv0_rwlock_writelock_create_ref( wl0 );
+        r1 = librv0_rwlock_writelock_create_ref( wl0, 0 );
         b &= r1 != 0;
         librv0_rwlock_writelock_destroy( &wl0 );
         librv0_rwlock_destroy( &rwl );
