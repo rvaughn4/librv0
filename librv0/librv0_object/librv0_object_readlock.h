@@ -16,12 +16,8 @@
 
 //create object readlock struct
     librv0_object_readlock *librv0_object_readlock_create( librv0_object *prt );
-//create object readlock struct on stack
-    librv0_object_readlock *librv0_object_readlock_create_on_stack( librv0_object_readlock *t, librv0_object *prt );
 //destroy object readlock struct
     void librv0_object_readlock_destroy( librv0_object_readlock **t );
-//destroy object readlock struct on stack
-    void librv0_object_readlock_destroy_on_stack( librv0_object_readlock *t );
 //init object readlock struct
     void __librv0_object_readlock_init( librv0_object_readlock *t, librv0_object *prt );
 //deinit object readlock struct

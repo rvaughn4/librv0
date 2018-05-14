@@ -6,6 +6,7 @@
 #include "librv0_object_readlock.h"
 #include "librv0_object_writelock.h"
 #include "librv0_object_ref.h"
+#include <string.h>
 
 //create new object
     librv0_object *librv0_object_create( void )
@@ -61,24 +62,84 @@
 //create readlock
     librv0_object_readlock *librv0_object_create_readlock( librv0_object *t )
     {
+        librv0_object_readlock *r;
+        librv0_rwlock_readlock rl;
+    //attempt readlock acquire
+        if( !librv0_rwlock_create_readlock_on_stack( &t->rwl, &rl ) )
+            return 0;
+    //generate object readlock
+        r = ( *( ( __librv0_object_gen_readlock_ptr )( t->func_gen_readlock ) ) )( t );
+        if( r )
+        {
+            memcpy( &r->rwl, &rl, sizeof( librv0_rwlock_readlock ) );
+            return r;
+        }
+    //cleanup readlock
+        librv0_rwlock_readlock_destroy_on_stack( &rl );
+    //return null
         return 0;
     }
 
 //create readlock with timeout
     librv0_object_readlock *librv0_object_try_create_readlock( librv0_object *t, unsigned long long ms )
     {
+        librv0_object_readlock *r;
+        librv0_rwlock_readlock rl;
+    //attempt readlock acquire
+        if( !librv0_rwlock_try_create_readlock_on_stack( &t->rwl, &rl, ms ) )
+            return 0;
+    //generate object readlock
+        r = ( *( ( __librv0_object_gen_readlock_ptr )( t->func_gen_readlock ) ) )( t );
+        if( r )
+        {
+            memcpy( &r->rwl, &rl, sizeof( librv0_rwlock_readlock ) );
+            return r;
+        }
+    //cleanup readlock
+        librv0_rwlock_readlock_destroy_on_stack( &rl );
+    //return null
         return 0;
     }
 
 //create writelock
     librv0_object_writelock *librv0_object_create_writelock( librv0_object *t )
     {
+        librv0_object_writelock *r;
+        librv0_rwlock_writelock rl;
+    //attempt writelock acquire
+        if( !librv0_rwlock_create_writelock_on_stack( &t->rwl, &rl ) )
+            return 0;
+    //generate object writelock
+        r = ( *( ( __librv0_object_gen_writelock_ptr )( t->func_gen_writelock ) ) )( t );
+        if( r )
+        {
+            memcpy( &r->rwl, &rl, sizeof( librv0_rwlock_writelock ) );
+            return r;
+        }
+    //cleanup writelock
+        librv0_rwlock_writelock_destroy_on_stack( &rl );
+    //return null
         return 0;
     }
 
 //create writelock with timeout
     librv0_object_writelock *librv0_object_try_create_writelock( librv0_object *t, unsigned long long ms )
     {
+        librv0_object_writelock *r;
+        librv0_rwlock_writelock rl;
+    //attempt writelock acquire
+        if( !librv0_rwlock_try_create_writelock_on_stack( &t->rwl, &rl, ms ) )
+            return 0;
+    //generate object writelock
+        r = ( *( ( __librv0_object_gen_writelock_ptr )( t->func_gen_writelock ) ) )( t );
+        if( r )
+        {
+            memcpy( &r->rwl, &rl, sizeof( librv0_rwlock_writelock ) );
+            return r;
+        }
+    //cleanup writelock
+        librv0_rwlock_writelock_destroy_on_stack( &rl );
+    //return null
         return 0;
     }
 
@@ -115,13 +176,13 @@
 //default function to generate readlock
     librv0_object_readlock *__librv0_object_gen_readlock( librv0_object *t )
     {
-        return 0;
+        return librv0_object_readlock_create( t );
     }
 
 //default function to generate writelock
     librv0_object_writelock *__librv0_object_gen_writelock( librv0_object *t )
     {
-        return 0;
+        return librv0_object_writelock_create( t );
     }
 
 //default function to generate ref
