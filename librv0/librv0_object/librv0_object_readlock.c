@@ -25,7 +25,7 @@
         if( !t || !*t )
             return;
     //deinit struct
-
+        ( *( ( __librv0_object_readlock_deinit_ptr )( ( *t )->func_deinit ) ) )( *t );
     //release memory
         free( *t );
     //set pointer to null
@@ -37,6 +37,8 @@
     {
     //handle rwlock inside of object->create_readlock and not here
         t->prt = prt;
+    //set func pointers
+        __librv0_object_readlock_set_deinit_func( t, __librv0_object_readlock_deinit );
     }
 
 //deinit object readlock struct
@@ -44,6 +46,12 @@
     {
     //handle rwlock
         librv0_rwlock_readlock_destroy_on_stack( &t->rwl );
+    }
+
+//set deinit function
+    void __librv0_object_readlock_set_deinit_func( librv0_object_readlock *t, __librv0_object_readlock_deinit_ptr func )
+    {
+        t->func_deinit = func;
     }
 
 //return id

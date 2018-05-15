@@ -32,6 +32,8 @@
     void __librv0_object_writelock_init( librv0_object_writelock *t, librv0_object *prt );
 //deinit object writelock struct
     void __librv0_object_writelock_deinit( librv0_object_writelock *t );
+//generate ref
+    librv0_object_ref *__librv0_object_writelock_gen_ref( librv0_object_writelock *t );
 //set deinit function
     void __librv0_object_writelock_set_deinit_func( librv0_object_writelock *t, __librv0_object_writelock_deinit_ptr func );
 //set generate ref function pointer
