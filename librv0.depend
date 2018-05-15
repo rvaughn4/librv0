@@ -4,11 +4,12 @@
 	<stdlib.h>
 	"librv0/librv0_rwlock/librv0_rwlock.h"
 
-1526224385 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_object/librv0_object.c
+1526295580 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_object/librv0_object.c
 	"librv0_object.h"
 	"librv0_object_readlock.h"
 	"librv0_object_writelock.h"
 	"librv0_object_ref.h"
+	<string.h>
 
 1526294733 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_object/librv0_object_readlock.c
 	"librv0_object.h"
@@ -95,9 +96,10 @@
 	"../librv0_rwlock/librv0_rwlock_readlock.h"
 	"librv0_object.h"
 
-1526295172 /home/richard/codeblocks/librv/librv0/librv0/librv0_object/librv0_object_writelock.h
+1526344142 /home/richard/codeblocks/librv/librv0/librv0/librv0_object/librv0_object_writelock.h
 	"../librv0_rwlock/librv0_rwlock_writelock.h"
 	"librv0_object.h"
+	"librv0_object_ref.h"
 
 1526224165 /home/richard/codeblocks/librv/librv0/librv0/librv0_object/librv0_object_ref.h
 	"librv0_object.h"

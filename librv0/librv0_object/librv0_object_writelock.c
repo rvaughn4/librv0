@@ -25,7 +25,7 @@
         if( !t || !*t )
             return;
     //deinit struct
-
+        ( *( (__librv0_object_writelock_deinit_ptr )( ( *t )->func_deinit ) ) )( *t );
     //release memory
         free( *t );
     //set to null
@@ -44,6 +44,18 @@
     {
     //handle rwl
         librv0_rwlock_writelock_destroy_on_stack( &t->rwl );
+    }
+
+//set deinit function
+    void __librv0_object_writelock_set_deinit_func( librv0_object_writelock *t, __librv0_object_writelock_deinit_ptr func )
+    {
+        t->func_deinit = func;
+    }
+
+//set generate ref function pointer
+    void __librv0_object_writelock_set_gen_ref_func( librv0_object_writelock *t, __librv0_object_writelock_gen_ref_ptr func )
+    {
+        t->func_gen_ref = func;
     }
 
 //return id
@@ -108,8 +120,18 @@
     }
 
 //create ref
-
-//create ref on stack
+    librv0_object_ref *librv0_object_writelock_create_ref( librv0_object_writelock *t )
+    {
+        librv0_object_ref *r;
+    //create ref
+        r = ( *( ( __librv0_object_writelock_gen_ref_ptr )( t->func_gen_ref ) ) )( t );
+        if( !r )
+            return 0;
+    //create ref rwlock
+        librv0_rwlock_ref_create_on_stack( t->rwl.prt, &t->rwl, &r->rwl, t->prt );
+    //return
+        return r;
+    }
 
 #endif // librv0_object_writelock_h
 

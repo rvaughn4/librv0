@@ -18,11 +18,12 @@
         void                    *func_gen_ref;
     } librv0_object_writelock;
 
+#include "librv0_object_ref.h"
+
 //function to deinit
     typedef void (*__librv0_object_writelock_deinit_ptr)( librv0_object_writelock *t );
 //function to generate ref
     typedef librv0_object_ref *(*__librv0_object_writelock_gen_ref_ptr)( librv0_object_writelock *l );
-
 //create object writelock struct
     librv0_object_writelock *librv0_object_writelock_create( librv0_object *prt );
 //destroy object writelock struct
@@ -31,6 +32,10 @@
     void __librv0_object_writelock_init( librv0_object_writelock *t, librv0_object *prt );
 //deinit object writelock struct
     void __librv0_object_writelock_deinit( librv0_object_writelock *t );
+//set deinit function
+    void __librv0_object_writelock_set_deinit_func( librv0_object_writelock *t, __librv0_object_writelock_deinit_ptr func );
+//set generate ref function pointer
+    void __librv0_object_writelock_set_gen_ref_func( librv0_object_writelock *t, __librv0_object_writelock_gen_ref_ptr func );
 //return id
     unsigned long long librv0_object_writelock_get_id( librv0_object_writelock *t );
 //return last ticks ran
@@ -50,7 +55,6 @@
 //execute
     void librv0_object_writelock_execute( librv0_object_writelock *t, unsigned long long ms_ticks, unsigned long long epoch_ms );
 //create ref
-
-//create ref on stack
+    librv0_object_ref *librv0_object_writelock_create_ref( librv0_object_writelock *t );
 
 #endif // librv0_object_writelock_h
