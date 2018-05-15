@@ -15,7 +15,6 @@
         bool                bHasStart, bDoRun;
         void                *func_gen_readlock;
         void                *func_gen_writelock;
-        void                *func_gen_ref;
         void                *func_deinit;
         void                *func_execute;
     } librv0_object;
@@ -28,8 +27,6 @@
     typedef librv0_object_readlock *(*__librv0_object_gen_readlock_ptr)( librv0_object *t );
 //function to generate writelock
     typedef librv0_object_writelock *(*__librv0_object_gen_writelock_ptr)( librv0_object *t );
-//function to generate ref
-    typedef librv0_object_ref *(*__librv0_object_gen_ref_ptr)( librv0_object *t, librv0_object_writelock *l );
 //function to deinit
     typedef void (*__librv0_object_deinit_ptr)( librv0_object *t );
 //function to execute
@@ -54,8 +51,6 @@
     void __librv0_object_set_gen_readlock_func( librv0_object *t, __librv0_object_gen_readlock_ptr );
 //set generate writelock function pointer
     void __librv0_object_set_gen_writelock_func( librv0_object *t, __librv0_object_gen_writelock_ptr );
-//set generate ref function pointer
-    void __librv0_object_set_gen_ref_func( librv0_object *t, __librv0_object_gen_ref_ptr );
 //set deinit function pointer
     void __librv0_object_set_deinit_func( librv0_object *t, __librv0_object_deinit_ptr );
 //set deinit function pointer
@@ -64,9 +59,9 @@
     librv0_object_readlock *__librv0_object_gen_readlock( librv0_object *t );
 //default function to generate writelock
     librv0_object_writelock *__librv0_object_gen_writelock( librv0_object *t );
-//default function to generate ref
-    librv0_object_ref *__librv0_object_gen_ref( librv0_object *t, librv0_object_writelock *l );
 //default execute function
     void __librv0_object_execute( librv0_object *t, librv0_object_writelock *l, unsigned long long ticks, unsigned long long epoch );
+//test object code
+    bool librv0_object_test( void );
 
 #endif // librv0_object_h

@@ -48,7 +48,6 @@
         librv0_rwlock_create_on_stack( &t->rwl );
         __librv0_object_set_gen_readlock_func( t, __librv0_object_gen_readlock );
         __librv0_object_set_gen_writelock_func( t, __librv0_object_gen_writelock );
-        __librv0_object_set_gen_ref_func( t, __librv0_object_gen_ref );
         __librv0_object_set_execute_func( t, __librv0_object_execute );
         __librv0_object_set_deinit_func( t, __librv0_object_deinit );
     }
@@ -155,12 +154,6 @@
         t->func_gen_writelock = func;
     }
 
-//set generate ref function pointer
-    void __librv0_object_set_gen_ref_func( librv0_object *t, __librv0_object_gen_ref_ptr func )
-    {
-        t->func_gen_ref = func;
-    }
-
 //set deinit function pointer
     void __librv0_object_set_deinit_func( librv0_object *t, __librv0_object_deinit_ptr func )
     {
@@ -185,16 +178,177 @@
         return librv0_object_writelock_create( t );
     }
 
-//default function to generate ref
-    librv0_object_ref *__librv0_object_gen_ref( librv0_object *t, librv0_object_writelock *l )
-    {
-        return 0;
-    }
-
 //default execute function
     void __librv0_object_execute( librv0_object *t, librv0_object_writelock *l, unsigned long long ticks, unsigned long long epoch )
     {
         return;
+    }
+
+//test object code
+    bool librv0_object_test( void )
+    {
+        librv0_object *o;
+        librv0_object_readlock *rl0, *rl1, *rl2;
+        librv0_object_writelock *wl0, *wl1;
+        librv0_object_ref *r0, *r1, *r2;
+        bool b;
+
+    //test creation and deletion
+        o = librv0_object_create();
+        librv0_object_destroy( &o );
+        o = librv0_object_create();
+
+    //create multiple readlocks
+        rl0 = librv0_object_create_readlock( o );
+        b = rl0 != 0;
+        rl1 = librv0_object_try_create_readlock( o, 100 );
+        b &= rl1 != 0;
+        rl2 = librv0_object_try_create_readlock( o, 100 );
+        b &= rl2 != 0;
+        librv0_object_readlock_destroy( &rl0 );
+        librv0_object_readlock_destroy( &rl1 );
+        librv0_object_readlock_destroy( &rl2 );
+        if( !b )
+        {
+            librv0_object_destroy( &o );
+            return 0;
+        }
+
+    //create multiple writelocks
+        wl0 = librv0_object_create_writelock( o );
+        b = wl0 != 0;
+        wl1 = librv0_object_try_create_writelock( o, 100 );
+        b &= wl1 == 0;
+        librv0_object_writelock_destroy( &wl0 );
+        librv0_object_writelock_destroy( &wl1 );
+        if( !b )
+        {
+            librv0_object_destroy( &o );
+            return 0;
+        }
+
+    //create readlock during writelock
+        wl0 = librv0_object_create_writelock( o );
+        b = wl0 != 0;
+        rl0 = librv0_object_try_create_readlock( o, 100 );
+        b &= rl0 == 0;
+        librv0_object_writelock_destroy( &wl0 );
+        librv0_object_readlock_destroy( &rl0 );
+        if( !b )
+        {
+            librv0_object_destroy( &o );
+            return 0;
+        }
+
+    //create writelock during readlock
+        rl0 = librv0_object_create_readlock( o );
+        b = rl0 != 0;
+        wl0 = librv0_object_try_create_writelock( o, 100 );
+        b &= wl0 == 0;
+        librv0_object_writelock_destroy( &wl0 );
+        librv0_object_readlock_destroy( &rl0 );
+        if( !b )
+        {
+            librv0_object_destroy( &o );
+            return 0;
+        }
+
+    //create and destroy refs
+        wl0 = librv0_object_create_writelock( o );
+        if( !wl0 )
+        {
+            librv0_object_destroy( &o );
+            return 0;
+        }
+        r0 = librv0_object_writelock_create_ref( wl0 );
+        b = r0 != 0;
+        r1 = librv0_object_writelock_create_ref( wl0 );
+        b &= r1 != 0;
+        r2 = librv0_object_writelock_create_ref( wl0 );
+        b &= r2 != 0;
+        librv0_object_writelock_destroy( &wl0 );
+        librv0_object_ref_destroy( &r0 );
+        librv0_object_ref_destroy( &r1 );
+        librv0_object_ref_destroy( &r2 );
+        if( !b )
+        {
+            librv0_object_destroy( &o );
+            return 0;
+        }
+
+    //create ref for remaining tests
+        wl0 = librv0_object_create_writelock( o );
+        if( !wl0 )
+        {
+            librv0_object_destroy( &o );
+            return 0;
+        }
+        r0 = librv0_object_writelock_create_ref( wl0 );
+        librv0_object_writelock_destroy( &wl0 );
+/*
+    //create multiple readlocks
+        rl0 = librv0_object_ref_create_readlock( r0 );
+        b = rl0 != 0;
+        rl1 = librv0_object_ref_try_create_readlock( r0, 100 );
+        b &= rl1 != 0;
+        rl2 = librv0_object_ref_try_create_readlock( r0, 100 );
+        b &= rl2 != 0;
+        librv0_object_readlock_destroy( &rl0 );
+        librv0_object_readlock_destroy( &rl1 );
+        librv0_object_readlock_destroy( &rl2 );
+        if( !b )
+        {
+            librv0_object_ref_destroy( &r0 );
+            librv0_object_destroy( &o );
+            return 0;
+        }
+
+    //create readlock during writelock
+        wl0 = librv0_object_ref_create_writelock( r0 );
+        b = wl0 != 0;
+        rl0 = librv0_object_ref_try_create_readlock( r0, 100 );
+        b &= rl0 == 0;
+        librv0_object_writelock_destroy( &wl0 );
+        librv0_object_readlock_destroy( &rl0 );
+        if( !b )
+        {
+            librv0_object_ref_destroy( &r0 );
+            librv0_object_destroy( &o );
+            return 0;
+        }
+
+    //create writelock during readlock
+        rl0 = librv0_object_ref_create_readlock( r0 );
+        b = rl0 != 0;
+        wl0 = librv0_object_ref_try_create_writelock( r0, 100 );
+        b &= wl0 == 0;
+        librv0_object_writelock_destroy( &wl0 );
+        librv0_object_readlock_destroy( &rl0 );
+        if( !b )
+        {
+            librv0_object_ref_destroy( &r0 );
+            librv0_object_destroy( &o );
+            return 0;
+        }
+*/
+    //destroy object and continue using ref
+        librv0_object_destroy( &o );
+
+    //try to use ref
+        rl0 = librv0_object_ref_try_create_readlock( r0, 100 );
+        b = rl0 == 0;
+        wl0 = librv0_object_ref_try_create_writelock( r0, 100 );
+        b &= wl0 == 0;
+        librv0_object_writelock_destroy( &wl0 );
+        librv0_object_readlock_destroy( &rl0 );
+        if( !b )
+        {
+            librv0_object_ref_destroy( &r0 );
+            return 0;
+        }
+        librv0_object_ref_destroy( &r0 );
+
+        return 1;
     }
 
 #endif // librv0_object_h

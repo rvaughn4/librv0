@@ -1,10 +1,10 @@
 # depslib dependency file v1.0
-1525860272 source:/home/richard/codeblocks/librv/librv0/main.c
+1526380013 source:/home/richard/codeblocks/librv/librv0/main.c
 	<stdio.h>
 	<stdlib.h>
-	"librv0/librv0_rwlock/librv0_rwlock.h"
+	"librv0/librv0_object/librv0_object.h"
 
-1526295580 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_object/librv0_object.c
+1526382280 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_object/librv0_object.c
 	"librv0_object.h"
 	"librv0_object_readlock.h"
 	"librv0_object_writelock.h"
@@ -21,7 +21,7 @@
 	"librv0_object_writelock.h"
 	"librv0_object_ref.h"
 
-1526372948 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_object/librv0_object_writelock.c
+1526374841 source:/home/richard/codeblocks/librv/librv0/librv0/librv0_object/librv0_object_writelock.c
 	"librv0_object.h"
 	"librv0_object_writelock.h"
 
@@ -90,7 +90,7 @@
 	"librv0_rwlock_readlock.h"
 	"librv0_rwlock_writelock.h"
 
-1526223648 /home/richard/codeblocks/librv/librv0/librv0/librv0_object/librv0_object.h
+1526379873 /home/richard/codeblocks/librv/librv0/librv0/librv0_object/librv0_object.h
 	"../librv0_rwlock/librv0_rwlock.h"
 	"librv0_object_readlock.h"
 	"librv0_object_writelock.h"
